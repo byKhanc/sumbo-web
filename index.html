@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숨보 Sumbo - 보물찾기 플랫폼</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>숨보 Sumbo</h1>
+            <p>보물찾기 플랫폼</p>
+        </div>
+        
+        <ul class="nav-links">
+            <li>
+                <a href="#home" class="nav-link active">
+                    <span class="material-icons">home</span>
+                    <span>홈</span>
+                </a>
+            </li>
+            <li>
+                <a href="#treasuremap" class="nav-link">
+                    <span class="material-icons">map</span>
+                    <span>보물지도</span>
+                </a>
+            </li>
+            <li>
+                <a href="#mytreasures" class="nav-link">
+                    <span class="material-icons">diamond</span>
+                    <span>내 보물</span>
+                </a>
+            </li>
+            <li>
+                <a href="#mission" class="nav-link">
+                    <span class="material-icons">task</span>
+                    <span>미션</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <p>&copy; 2024 Sumbo</p>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+        <!-- Content will be dynamically loaded here -->
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
