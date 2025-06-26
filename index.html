@@ -19,6 +19,11 @@
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-button">
+        <span class="material-icons">menu</span>
+    </button>
+
     <!-- Sidebar Navigation -->
     <nav class="sidebar">
         <div class="sidebar-header">
@@ -61,7 +66,10 @@
 
     <!-- Main Content Area -->
     <main id="main-content">
-        <!-- Content will be dynamically loaded here -->
+        <div id="page-content">
+            <!-- Dynamic content will be loaded here -->
+            <div class="loading-spinner"></div>
+        </div>
     </main>
 
     <!-- Scripts -->
