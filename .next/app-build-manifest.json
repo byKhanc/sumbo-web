@@ -1,3 +1,49 @@
 {
-  "pages": {}
+  "pages": {
+    "/_not-found": [
+      "static/chunks/webpack-fcf2529314568acf.js",
+      "static/chunks/fd9d1056-2f0d1b34a58af5fd.js",
+      "static/chunks/69-28f825ac4169f097.js",
+      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
+      "static/chunks/app/_not-found-8bba112d2119b9b6.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-fcf2529314568acf.js",
+      "static/chunks/fd9d1056-2f0d1b34a58af5fd.js",
+      "static/chunks/69-28f825ac4169f097.js",
+      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
+      "static/css/6ec3c9b20433c23a.css",
+      "static/chunks/app/layout-dd9636b4535b646b.js"
+    ],
+    "/mytreasures/page": [
+      "static/chunks/webpack-fcf2529314568acf.js",
+      "static/chunks/fd9d1056-2f0d1b34a58af5fd.js",
+      "static/chunks/69-28f825ac4169f097.js",
+      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
+      "static/chunks/app/mytreasures/page-87baf5a4779138b7.js"
+    ],
+    "/admin/page": [
+      "static/chunks/webpack-fcf2529314568acf.js",
+      "static/chunks/fd9d1056-2f0d1b34a58af5fd.js",
+      "static/chunks/69-28f825ac4169f097.js",
+      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
+      "static/chunks/app/admin/page-778dfae8eec82b83.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-fcf2529314568acf.js",
+      "static/chunks/fd9d1056-2f0d1b34a58af5fd.js",
+      "static/chunks/69-28f825ac4169f097.js",
+      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
+      "static/chunks/app/page-537f470f97079233.js"
+    ],
+    "/treasuremap/page": [
+      "static/chunks/webpack-fcf2529314568acf.js",
+      "static/chunks/fd9d1056-2f0d1b34a58af5fd.js",
+      "static/chunks/69-28f825ac4169f097.js",
+      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
+      "static/chunks/d0deef33-fb7268917bd34cd7.js",
+      "static/css/fc1c9daac70c093b.css",
+      "static/chunks/app/treasuremap/page-af800efa5e29a0a9.js"
+    ]
+  }
 }

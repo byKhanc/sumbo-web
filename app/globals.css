@@ -22,4 +22,13 @@
 
 .leaflet-popup-pane {
   z-index: 1001;
+}
+
+/* Custom styles */
+.nav-link {
+  @apply text-blue-600 hover:text-blue-800 transition-colors;
+}
+
+.main-content {
+  @apply p-4 bg-white rounded-lg shadow-sm;
 } 

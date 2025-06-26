@@ -1,1 +1,7 @@
-{}
+{
+  "/_not-found": "app/_not-found.js",
+  "/mytreasures/page": "app/mytreasures/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/page": "app/page.js",
+  "/treasuremap/page": "app/treasuremap/page.js"
+}
