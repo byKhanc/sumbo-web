@@ -20,6 +20,10 @@ class Router {
     }
 
     async handleRoute() {
+        // Always cleanup map before rendering new route
+        if (typeof cleanupMap === 'function') {
+            cleanupMap();
+        }
         const hash = window.location.hash || '#home';
         const route = this.routes[hash];
         
