@@ -1,46 +1,20 @@
 {
   "pages": {
-    "/_not-found": [
-      "static/chunks/webpack-bf1a64d1eafd2816.js",
-      "static/chunks/fd9d1056-cc48c28d170fddc2.js",
-      "static/chunks/69-1b6d135f94ac0e36.js",
-      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
-      "static/chunks/app/_not-found-4e5c3b73d883060d.js"
-    ],
     "/layout": [
-      "static/chunks/webpack-bf1a64d1eafd2816.js",
-      "static/chunks/fd9d1056-cc48c28d170fddc2.js",
-      "static/chunks/69-1b6d135f94ac0e36.js",
-      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
-      "static/chunks/app/layout-263dce96c68d7393.js"
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/layout.js"
     ],
-    "/mytreasures/page": [
-      "static/chunks/webpack-bf1a64d1eafd2816.js",
-      "static/chunks/fd9d1056-cc48c28d170fddc2.js",
-      "static/chunks/69-1b6d135f94ac0e36.js",
-      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
-      "static/chunks/app/mytreasures/page-52db560fdfceed8c.js"
+    "/treasuremap/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/treasuremap/page.css",
+      "static/chunks/app/treasuremap/page.js"
     ],
-    "/page": [
-      "static/chunks/webpack-bf1a64d1eafd2816.js",
-      "static/chunks/fd9d1056-cc48c28d170fddc2.js",
-      "static/chunks/69-1b6d135f94ac0e36.js",
-      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
-      "static/chunks/app/page-ad6cc8ddecb6c217.js"
-    ],
-    "/mission/[id]/page": [
-      "static/chunks/webpack-bf1a64d1eafd2816.js",
-      "static/chunks/fd9d1056-cc48c28d170fddc2.js",
-      "static/chunks/69-1b6d135f94ac0e36.js",
-      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
-      "static/chunks/app/mission/[id]/page-fa38f48aa55bbfe0.js"
-    ],
-    "/admin/page": [
-      "static/chunks/webpack-bf1a64d1eafd2816.js",
-      "static/chunks/fd9d1056-cc48c28d170fddc2.js",
-      "static/chunks/69-1b6d135f94ac0e36.js",
-      "static/chunks/main-app-fdf8bdd95bcd29bf.js",
-      "static/chunks/app/admin/page-67c5d5197b05074b.js"
+    "/not-found": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/not-found.js"
     ]
   }
 }

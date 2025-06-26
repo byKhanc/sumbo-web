@@ -1,9 +1,15 @@
 // app/treasuremap/page.tsx
+import dynamic from 'next/dynamic';
+
+// 클라이언트 컴포넌트 dynamic import (SSR 방지)
+const TreasureMapClient = dynamic(() => import('./TreasureMapClient'), {
+  ssr: false,
+});
+
 export default function TreasureMapPage() {
   return (
-    <div>
-      <h1>Treasure Map Page</h1>
-      <p>This is the treasure map route. Welcome!</p>
+    <div className="w-full h-screen">
+      <TreasureMapClient />
     </div>
   );
 }
