@@ -21,20 +21,33 @@ document.addEventListener('DOMContentLoaded', () => {
 const mobileMenuButton = document.querySelector('.mobile-menu-button');
 const sidebar = document.querySelector('.sidebar');
 
-mobileMenuButton.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
+function setSidebarOpen(open) {
+    if (open) {
+        sidebar.classList.add('open');
+        document.body.classList.add('sidebar-open');
+    } else {
+        sidebar.classList.remove('open');
+        document.body.classList.remove('sidebar-open');
+    }
+}
+
+mobileMenuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setSidebarOpen(!sidebar.classList.contains('open'));
 });
 
-// Close sidebar when clicking outside
+// Close sidebar when clicking outside (on mobile)
 document.addEventListener('click', (e) => {
-    if (!sidebar.contains(e.target) && !mobileMenuButton.contains(e.target)) {
-        sidebar.classList.remove('open');
+    if (window.innerWidth <= 768) {
+        if (!sidebar.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+            setSidebarOpen(false);
+        }
     }
 });
 
 // Close sidebar when route changes
 window.addEventListener('hashchange', () => {
-    sidebar.classList.remove('open');
+    setSidebarOpen(false);
 });
 
 // Active link handling
