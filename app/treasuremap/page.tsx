@@ -1,4 +1,5 @@
 // app/treasuremap/page.tsx
+
 export default function TreasureMapPage() {
   return (
     <main className="p-6">
