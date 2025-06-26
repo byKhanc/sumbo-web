@@ -1,8 +1,8 @@
 export default function TreasureMapPage() {
   return (
     <main>
-      <h1>Treasure Map</h1>
-      <p>보물지도를 여기에 표시할 예정입니다.</p>
+      <h1>보물 지도 페이지</h1>
+      <p>이곳에서 보물을 찾는 여정을 시작하세요.</p>
     </main>
   );
 }
