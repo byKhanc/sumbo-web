@@ -59,21 +59,39 @@ async function initMap() {
                 likes[rid] = likes[rid] || 0;
                 let userLikes = JSON.parse(localStorage.getItem('userLikes')||'{}');
                 userLikes[rid] = userLikes[rid]||[];
-                if (userLikes[rid].includes(userId)) return alert('이미 좋아요를 눌렀습니다!');
-                likes[rid]++;
-                userLikes[rid].push(userId);
-                localStorage.setItem('restaurantLikes', JSON.stringify(likes));
-                localStorage.setItem('userLikes', JSON.stringify(userLikes));
-                // 하이라이트 처리
-                if (likes[rid] >= 10) {
-                    let main = JSON.parse(localStorage.getItem('mainRestaurants')||'[]');
-                    let found = main.find(x=>x.id==rid);
-                    if (found) found.highlightUntil = Date.now() + 7*24*60*60*1000;
-                    else main.push({ ...restaurants.find(x=>x.id==rid), highlightUntil: Date.now() + 7*24*60*60*1000 });
-                    localStorage.setItem('mainRestaurants', JSON.stringify(main));
+                const alreadyLiked = userLikes[rid].includes(userId);
+                if (alreadyLiked) {
+                    // 취소
+                    likes[rid] = Math.max(0, likes[rid]-1);
+                    userLikes[rid] = userLikes[rid].filter(uid => uid !== userId);
+                    localStorage.setItem('restaurantLikes', JSON.stringify(likes));
+                    localStorage.setItem('userLikes', JSON.stringify(userLikes));
+                    // 하이라이트 해제
+                    if (likes[rid] < 10) {
+                        let main = JSON.parse(localStorage.getItem('mainRestaurants')||'[]');
+                        let found = main.find(x=>x.id==rid);
+                        if (found) found.highlightUntil = 0;
+                        localStorage.setItem('mainRestaurants', JSON.stringify(main));
+                    }
+                    alert('좋아요가 취소되었습니다!');
+                    map.closePopup();
+                } else {
+                    // 좋아요
+                    likes[rid]++;
+                    userLikes[rid].push(userId);
+                    localStorage.setItem('restaurantLikes', JSON.stringify(likes));
+                    localStorage.setItem('userLikes', JSON.stringify(userLikes));
+                    // 하이라이트 처리
+                    if (likes[rid] >= 10) {
+                        let main = JSON.parse(localStorage.getItem('mainRestaurants')||'[]');
+                        let found = main.find(x=>x.id==rid);
+                        if (found) found.highlightUntil = Date.now() + 7*24*60*60*1000;
+                        else main.push({ ...restaurants.find(x=>x.id==rid), highlightUntil: Date.now() + 7*24*60*60*1000 });
+                        localStorage.setItem('mainRestaurants', JSON.stringify(main));
+                    }
+                    alert('좋아요가 반영되었습니다!');
+                    map.closePopup();
                 }
-                alert('좋아요가 반영되었습니다!');
-                map.closePopup();
             };
         }
     });

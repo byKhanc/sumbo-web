@@ -143,12 +143,11 @@ const routes = {
     },
 
     '#mission': () => {
-        // 미션 목록 불러오기
         fetch('missions.json')
             .then(res => res.json())
             .then(missions => {
                 const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
-                let content = `<h1 class="page-title">미션</h1><div class="grid">`;
+                let content = `<h1 class="page-title">미션</h1><button class="button" style="margin-bottom:1.5rem;float:right;" onclick="window.location.hash='#mission-history'">내 미션 히스토리</button><div class="grid">`;
                 missions.forEach(m => {
                     const isDone = !!missionResults[m.id];
                     content += `
@@ -165,7 +164,6 @@ const routes = {
                 });
                 content += '</div>';
                 document.getElementById('main-content').innerHTML = content;
-                // 미션 참여 버튼 이벤트
                 document.querySelectorAll('.mission-btn').forEach(btn => {
                     btn.onclick = function() {
                         const id = Number(this.dataset.id);
@@ -211,6 +209,36 @@ const routes = {
             this.reset();
             renderSuggestedList();
         };
+    },
+
+    '#mission-history': () => {
+        fetch('missions.json')
+            .then(res => res.json())
+            .then(missions => {
+                const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
+                let completed = missions.filter(m => missionResults[m.id]);
+                let content = `<h1 class="page-title">내 미션 히스토리</h1>`;
+                if (completed.length === 0) {
+                    content += `<div class="card"><h2>아직 완료한 미션이 없습니다.</h2></div>`;
+                } else {
+                    content += '<div class="card-grid">';
+                    completed.forEach(m => {
+                        const result = missionResults[m.id];
+                        content += `<div class="card">
+                            <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
+                            <p style="color:#666;">${m.description}</p>
+                            <div style="margin:1rem 0;">
+                                <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
+                            </div>
+                            <div style="color:#16a34a;font-weight:bold;">완료일: ${new Date(result.date).toLocaleString()}</div>
+                            ${result.review ? `<div style='margin-top:0.5rem;'><b>리뷰:</b> ${result.review}</div>` : ''}
+                        </div>`;
+                    });
+                    content += '</div>';
+                }
+                content += `<button class="button" style="margin-top:2rem;" onclick="window.location.hash='#mission'">미션 목록으로</button>`;
+                document.getElementById('main-content').innerHTML = content;
+            });
     }
 };
 
@@ -281,6 +309,7 @@ function showMissionDetail(missionId) {
             `;
             if (missionResults[m.id]) {
                 content += `<div class="badge" style="background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">이미 완료한 미션입니다!</div>`;
+                content += `<button class="button" style="margin-top:1.5rem;" onclick="window.location.hash='#mission-history'">내 미션 히스토리</button>`;
             } else {
                 // 미션 유형별 폼
                 if (m.type === 'visit') {
