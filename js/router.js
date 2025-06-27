@@ -143,17 +143,36 @@ const routes = {
     },
 
     '#mission': () => {
-        const content = `
-            <h1 class="page-title">미션</h1>
-            <div class="card-grid">
-                <div class="card">
-                    <span class="material-icons">lock_clock</span>
-                    <h2>곧 공개됩니다</h2>
-                    <p>새로운 미션이 곧 추가될 예정입니다. 조금만 기다려주세요!</p>
-                </div>
-            </div>
-        `;
-        document.getElementById('main-content').innerHTML = content;
+        // 미션 목록 불러오기
+        fetch('missions.json')
+            .then(res => res.json())
+            .then(missions => {
+                const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
+                let content = `<h1 class="page-title">미션</h1><div class="grid">`;
+                missions.forEach(m => {
+                    const isDone = !!missionResults[m.id];
+                    content += `
+                        <div class="card mission-card" style="position:relative;">
+                            <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
+                            <p style="color:#666;">${m.description}</p>
+                            <div style="margin:1rem 0;">
+                                <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
+                            </div>
+                            <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;" ${isDone ? 'disabled' : ''}>${isDone ? '완료됨' : '참여하기'}</button>
+                            ${isDone ? '<div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">완료</div>' : ''}
+                        </div>
+                    `;
+                });
+                content += '</div>';
+                document.getElementById('main-content').innerHTML = content;
+                // 미션 참여 버튼 이벤트
+                document.querySelectorAll('.mission-btn').forEach(btn => {
+                    btn.onclick = function() {
+                        const id = Number(this.dataset.id);
+                        showMissionDetail(id);
+                    };
+                });
+            });
     },
 
     '#suggest': () => {
@@ -243,6 +262,69 @@ function renderSuggestedList() {
             renderSuggestedList();
         };
     });
+}
+
+// 미션 상세/참여 UI
+function showMissionDetail(missionId) {
+    fetch('missions.json')
+        .then(res => res.json())
+        .then(missions => {
+            const m = missions.find(x => x.id === missionId);
+            if (!m) return;
+            const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
+            let content = `<div class="card" style="max-width:500px;margin:2rem auto;">
+                <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
+                <p style="color:#666;">${m.description}</p>
+                <div style="margin:1rem 0;">
+                    <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
+                </div>
+            `;
+            if (missionResults[m.id]) {
+                content += `<div class="badge" style="background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">이미 완료한 미션입니다!</div>`;
+            } else {
+                // 미션 유형별 폼
+                if (m.type === 'visit') {
+                    content += `<button class="button" id="visit-mission-btn">위치 인증하기</button>`;
+                } else if (m.type === 'review') {
+                    content += `<textarea id="review-mission-input" rows="3" style="width:100%;margin:1rem 0;padding:8px;border-radius:5px;border:1px solid #ddd;" placeholder="한 줄 리뷰를 남겨주세요!"></textarea><button class="button" id="review-mission-btn">리뷰 제출</button>`;
+                } else if (m.type === 'vote') {
+                    content += `<button class="button" id="vote-mission-btn">추천 맛집 투표하러 가기</button>`;
+                }
+            }
+            content += `<button class="button" style="margin-top:1.5rem;background:#eee;color:#333;" onclick="window.location.hash='#mission'">미션 목록으로</button></div>`;
+            document.getElementById('main-content').innerHTML = content;
+            // 미션 참여 이벤트
+            if (!missionResults[m.id]) {
+                if (m.type === 'visit') {
+                    document.getElementById('visit-mission-btn').onclick = function() {
+                        // 위치 인증(간단히 위치 권한만 체크)
+                        if (!navigator.geolocation) return alert('위치 권한이 필요합니다!');
+                        navigator.geolocation.getCurrentPosition(pos => {
+                            // 실제로는 targetRestaurantId와 거리 체크 필요
+                            missionResults[m.id] = { completed: true, date: Date.now() };
+                            localStorage.setItem('missionCompletions', JSON.stringify(missionResults));
+                            alert('위치 인증 미션 완료!');
+                            window.location.hash = '#mission';
+                        }, err => {
+                            alert('위치 인증에 실패했습니다.');
+                        });
+                    };
+                } else if (m.type === 'review') {
+                    document.getElementById('review-mission-btn').onclick = function() {
+                        const val = document.getElementById('review-mission-input').value.trim();
+                        if (!val) return alert('리뷰를 입력해주세요!');
+                        missionResults[m.id] = { completed: true, review: val, date: Date.now() };
+                        localStorage.setItem('missionCompletions', JSON.stringify(missionResults));
+                        alert('리뷰 미션 완료!');
+                        window.location.hash = '#mission';
+                    };
+                } else if (m.type === 'vote') {
+                    document.getElementById('vote-mission-btn').onclick = function() {
+                        window.location.hash = '#suggest';
+                    };
+                }
+            }
+        });
 }
 
 // Initialize router
