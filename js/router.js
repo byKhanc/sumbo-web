@@ -342,6 +342,14 @@ function showMissionDetail(missionId) {
             document.getElementById('to-mission-list-btn').onclick = function() {
                 window.location.hash = '#mission';
             };
+            // 추가: 회색 "미션 목록으로" 버튼도 동작하도록 보장
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.textContent.trim() === '미션 목록으로') {
+                    btn.onclick = function() {
+                        window.location.hash = '#mission';
+                    };
+                }
+            });
             // 완료된 미션일 때 히스토리로 이동 버튼 동작
             if (missionResults[m.id]) {
                 document.getElementById('to-mission-history-btn').onclick = function() {
