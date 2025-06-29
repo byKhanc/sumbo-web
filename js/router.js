@@ -149,7 +149,13 @@ const routes = {
                 const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
                 let content = `<h1 class="page-title">미션</h1><div class="grid">`;
                 missions.forEach(m => {
-                    const isDone = !!missionResults[m.id];
+                    // 완료 횟수 계산 (missionResults가 배열이거나, id별로 여러 번 저장되는 구조라면 수정 필요)
+                    let doneCount = 0;
+                    if (Array.isArray(missionResults[m.id])) {
+                        doneCount = missionResults[m.id].length;
+                    } else if (missionResults[m.id]) {
+                        doneCount = 1;
+                    }
                     content += `
                         <div class="card mission-card" style="position:relative;">
                             <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
@@ -157,24 +163,13 @@ const routes = {
                             <div style="margin:1rem 0;">
                                 <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
                             </div>
-                            <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;" ${isDone ? '' : ''}>${isDone ? '완료됨' : '참여하기'}</button>
-                            ${isDone ? '<div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">완료</div>' : ''}
+                            <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:default;" disabled>진행 중</button>
+                            <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${doneCount}회 완료</div>
                         </div>
                     `;
                 });
                 content += '</div>';
                 document.getElementById('main-content').innerHTML = content;
-                document.querySelectorAll('.mission-btn').forEach(btn => {
-                    btn.onclick = function() {
-                        const id = Number(this.dataset.id);
-                        const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
-                        if (missionResults[id]) {
-                            window.location.hash = '#mission-history';
-                        } else {
-                            showMissionDetail(id);
-                        }
-                    };
-                });
             });
     },
 
@@ -396,10 +391,10 @@ function renderVoteMission() {
             <h1 class="page-title">추천 맛집 투표</h1>
             <p style="color:#666;">추천 맛집 중 한 곳에 투표해보세요.</p>
             <button class="button" style="margin-bottom:1.5rem;">투표 뱃지</button>
-            <div style="margin-top:2rem;display:flex;gap:1rem;">
-                <button class="button" id="go-vote-btn">추천 맛집 투표하러 가기</button>
-                <button class="button" id="to-mission-list-btn" style="background:#eee;color:#333;">미션 목록으로</button>
-            </div>
+        </div>
+        <div style="max-width:500px;margin:2rem auto 0 auto;display:flex;justify-content:flex-start;">
+            <button class="button" id="go-vote-btn" style="margin-right:1rem;">추천 맛집 투표하러 가기</button>
+            <button class="button" id="to-mission-list-btn">미션 목록으로</button>
         </div>
     `;
     document.getElementById('main-content').innerHTML = content;
