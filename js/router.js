@@ -244,7 +244,9 @@ const routes = {
                 content += `<button class="button" style="margin-top:2rem;" onclick="window.location.hash='#mission'">미션 목록으로</button>`;
                 document.getElementById('main-content').innerHTML = content;
             });
-    }
+    },
+
+    '#vote-mission': renderVoteMission
 };
 
 function renderSuggestedList() {
@@ -385,6 +387,28 @@ function showMissionDetail(missionId) {
                 }
             }
         });
+}
+
+// 추천 맛집 투표 미션 화면(투표 뱃지, 추천 맛집 투표하러 가기, 미션 목록으로 등)
+function renderVoteMission() {
+    const content = `
+        <div class="card" style="max-width:500px;margin:2rem auto;">
+            <h1 class="page-title">추천 맛집 투표</h1>
+            <p style="color:#666;">추천 맛집 중 한 곳에 투표해보세요.</p>
+            <button class="button" style="margin-bottom:1.5rem;">투표 뱃지</button>
+            <div style="margin-top:2rem;display:flex;gap:1rem;">
+                <button class="button" id="go-vote-btn">추천 맛집 투표하러 가기</button>
+                <button class="button" id="to-mission-list-btn" style="background:#eee;color:#333;">미션 목록으로</button>
+            </div>
+        </div>
+    `;
+    document.getElementById('main-content').innerHTML = content;
+    document.getElementById('go-vote-btn').onclick = function() {
+        window.location.hash = '#suggest';
+    };
+    document.getElementById('to-mission-list-btn').onclick = function() {
+        window.location.hash = '#mission';
+    };
 }
 
 // Initialize router
