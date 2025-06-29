@@ -249,12 +249,14 @@ const routes = {
 
 function renderSuggestedList() {
     let suggested = JSON.parse(localStorage.getItem('suggestedRestaurants') || '[]');
+    let userId = localStorage.getItem('userId') || (function(){ const id = 'u'+Date.now(); localStorage.setItem('userId',id); return id; })();
     let html = '';
     if (suggested.length === 0) {
         html = '<p style="color:#888;">아직 추천된 맛집이 없습니다.</p>';
     } else {
         html = '<ul style="list-style:none;padding:0;">';
         suggested.forEach(r => {
+            const voted = r.voters && r.voters.includes(userId);
             html += `<li class="card" style="margin-bottom:1rem;">
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <div>
@@ -263,7 +265,7 @@ function renderSuggestedList() {
                         <span style="color:#888;">${r.description}</span>
                     </div>
                     <div style="text-align:right;">
-                        <button class="button vote-btn" data-id="${r.id}" style="margin-bottom:0.5rem;">👍 투표</button><br>
+                        <button class="button vote-btn" data-id="${r.id}" style="margin-bottom:0.5rem;${voted ? 'background:#eee;color:#2563eb;' : ''}">👍 ${voted ? '투표 취소' : '투표'}</button><br>
                         <span style="font-size:1.1rem;">득표: <b>${r.votes}</b></span>
                     </div>
                 </div>
@@ -280,9 +282,19 @@ function renderSuggestedList() {
             let userId = localStorage.getItem('userId') || (function(){ const id = 'u'+Date.now(); localStorage.setItem('userId',id); return id; })();
             let r = suggested.find(x => x.id === id);
             if (!r) return;
-            if (r.voters && r.voters.includes(userId)) return alert('이미 투표하셨습니다!');
-            r.votes = (r.votes||0)+1;
-            r.voters = r.voters||[]; r.voters.push(userId);
+            r.voters = r.voters||[];
+            const voted = r.voters.includes(userId);
+            if (voted) {
+                // 투표 취소
+                r.votes = Math.max(0, (r.votes||1)-1);
+                r.voters = r.voters.filter(uid => uid !== userId);
+                alert('투표가 취소되었습니다!');
+            } else {
+                // 투표
+                r.votes = (r.votes||0)+1;
+                r.voters.push(userId);
+                alert('투표가 반영되었습니다!');
+            }
             // 5표 이상이면 공식 맛집으로 이동
             if (r.votes >= 5) {
                 let main = JSON.parse(localStorage.getItem('mainRestaurants') || '[]');
