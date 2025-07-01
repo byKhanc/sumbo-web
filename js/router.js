@@ -353,7 +353,37 @@ const routes = {
             });
     },
 
-    '#vote-mission': renderVoteMission
+    '#vote-mission': renderVoteMission,
+
+    '#settings': () => {
+        const moveMode = localStorage.getItem('moveMode') || 'walk';
+        const repeatAlarm = localStorage.getItem('repeatAlarm') === 'true';
+        const content = `
+            <h1 class="page-title">설정</h1>
+            <div class="card" style="margin-bottom:2rem;">
+                <h2 style="margin-bottom:1rem;">이동방식</h2>
+                <label style="display:block;margin-bottom:0.5rem;font-weight:600;"><input type="radio" name="moveMode" value="walk" ${moveMode==='walk'?'checked':''}> 걷는 중</label>
+                <label style="display:block;font-weight:600;"><input type="radio" name="moveMode" value="drive" ${moveMode==='drive'?'checked':''}> 운전 중</label>
+            </div>
+            <div class="card">
+                <h2 style="margin-bottom:1rem;">알림 반복 허용</h2>
+                <label style="display:block;margin-bottom:0.5rem;font-weight:600;"><input type="radio" name="repeatAlarm" value="on" ${repeatAlarm?'checked':''}> On</label>
+                <label style="display:block;font-weight:600;"><input type="radio" name="repeatAlarm" value="off" ${!repeatAlarm?'checked':''}> Off</label>
+            </div>
+        `;
+        document.getElementById('page-content').innerHTML = content;
+        // 이벤트 바인딩
+        document.querySelectorAll('input[name=moveMode]').forEach(radio => {
+            radio.onchange = function() {
+                if (this.checked) localStorage.setItem('moveMode', this.value);
+            };
+        });
+        document.querySelectorAll('input[name=repeatAlarm]').forEach(radio => {
+            radio.onchange = function() {
+                localStorage.setItem('repeatAlarm', this.value === 'on');
+            };
+        });
+    },
 };
 
 function renderSuggestedList() {
