@@ -149,7 +149,7 @@ const routes = {
         ]).then(([missions, restaurants]) => {
             const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
             let content = `<h1 class="page-title">미션</h1><div class="grid">`;
-            // 1-1. 기본 미션(missions.json)
+            // 기본 미션(missions.json)
             missions.forEach(m => {
                 let doneCount = 0;
                 if (Array.isArray(missionResults[m.id])) {
@@ -160,16 +160,15 @@ const routes = {
                 content += `
                     <div class="card mission-card" style="position:relative;">
                         <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
-                        <p style="color:#666;">${m.description}</p>
                         <div style="margin:1rem 0;">
                             <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
                         </div>
-                        <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">진행 중</button>
+                        <button class="button mission-detail-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">진행 중</button>
                         <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${doneCount}회 완료</div>
                     </div>
                 `;
             });
-            // 1-2. 맛집별 방문/리뷰/투표 미션 동적 생성
+            // 맛집별 방문/리뷰/투표 미션 동적 생성
             restaurants.forEach(r => {
                 // 방문 인증 미션
                 const visitKey = `visit_${r.id}`;
@@ -177,11 +176,10 @@ const routes = {
                 content += `
                     <div class="card mission-card" style="position:relative;">
                         <h2 style="margin-bottom:0.5rem;">[방문] ${r.name}</h2>
-                        <p style="color:#666;">${r.mission || r.description}</p>
                         <div style="margin:1rem 0;">
                             <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">방문 인증</span>
                         </div>
-                        <button class="button mission-btn" data-id="${visitKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${visitDone ? '완료' : '진행 중'}</button>
+                        <button class="button mission-detail-btn" data-id="${visitKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${visitDone ? '완료' : '진행 중'}</button>
                         <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${visitDone ? '1회 완료' : '0회 완료'}</div>
                     </div>
                 `;
@@ -191,11 +189,10 @@ const routes = {
                 content += `
                     <div class="card mission-card" style="position:relative;">
                         <h2 style="margin-bottom:0.5rem;">[리뷰] ${r.name}</h2>
-                        <p style="color:#666;">${r.mission || r.description}</p>
                         <div style="margin:1rem 0;">
                             <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">리뷰</span>
                         </div>
-                        <button class="button mission-btn" data-id="${reviewKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${reviewDone ? '완료' : '진행 중'}</button>
+                        <button class="button mission-detail-btn" data-id="${reviewKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${reviewDone ? '완료' : '진행 중'}</button>
                         <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${reviewDone ? '1회 완료' : '0회 완료'}</div>
                     </div>
                 `;
@@ -205,18 +202,16 @@ const routes = {
                 content += `
                     <div class="card mission-card" style="position:relative;">
                         <h2 style="margin-bottom:0.5rem;">[투표] ${r.name}</h2>
-                        <p style="color:#666;">이 맛집에 투표해보세요!</p>
                         <div style="margin:1rem 0;">
                             <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">투표</span>
                         </div>
-                        <button class="button mission-btn" data-id="${voteKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${voteDone ? '완료' : '진행 중'}</button>
+                        <button class="button mission-detail-btn" data-id="${voteKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${voteDone ? '완료' : '진행 중'}</button>
                         <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${voteDone ? '1회 완료' : '0회 완료'}</div>
                     </div>
                 `;
             });
             content += '</div>';
             document.getElementById('main-content').innerHTML = content;
-            bindMissionListButtons();
         });
     },
 
@@ -288,6 +283,98 @@ const routes = {
             });
     },
 
+    '#mission-detail': () => {
+        const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+        const missionId = params.get('id');
+        if (!missionId) return;
+        // 미션 정보 찾기
+        Promise.all([
+            fetch('missions.json').then(res => res.json()),
+            fetch('restaurants.json').then(res => res.json())
+        ]).then(([missions, restaurants]) => {
+            const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
+            let m = missions.find(x => String(x.id) === missionId);
+            let r = null;
+            let type = '';
+            if (!m) {
+                // 맛집별 미션
+                if (missionId.startsWith('visit_')) {
+                    type = 'visit';
+                    const rid = missionId.replace('visit_', '');
+                    r = restaurants.find(x => String(x.id) === rid);
+                } else if (missionId.startsWith('review_')) {
+                    type = 'review';
+                    const rid = missionId.replace('review_', '');
+                    r = restaurants.find(x => String(x.id) === rid);
+                } else if (missionId.startsWith('vote_')) {
+                    type = 'vote';
+                    const rid = missionId.replace('vote_', '');
+                    r = restaurants.find(x => String(x.id) === rid);
+                }
+            }
+            let content = `<div class="card" style="max-width:500px;margin:2rem auto;">
+                <button class="button back-btn" style="margin-bottom:1rem;background:#eee;color:#333;">← 뒤로 가기</button>`;
+            if (m) {
+                // 기본 미션 상세
+                content += `<h2 style="margin-bottom:0.5rem;">${m.title}</h2>
+                    <p style="color:#666;">${m.description}</p>
+                    <div style="margin:1rem 0;">
+                        <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
+                    </div>`;
+            } else if (r) {
+                // 맛집별 미션 상세
+                content += `<h2 style="margin-bottom:0.5rem;">[${type === 'visit' ? '방문' : type === 'review' ? '리뷰' : '투표'}] ${r.name}</h2>
+                    <p style="color:#666;">${r.mission || r.description}</p>
+                    <div style="margin:1rem 0;">
+                        <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${type === 'visit' ? '방문 인증' : type === 'review' ? '리뷰' : '투표'}</span>
+                    </div>`;
+            } else {
+                content += `<h2>미션 정보를 찾을 수 없습니다.</h2>`;
+            }
+            // 미션 입력/완료 UI
+            if (missionResults[missionId]) {
+                content += `<div class="badge" style="background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;margin:1rem 0;">이미 완료한 미션입니다!</div>`;
+            } else if (type === 'visit') {
+                content += `<button class="button" id="visit-mission-btn" style="margin-top:1rem;">위치 인증하기</button>`;
+            } else if (type === 'review') {
+                content += `<textarea id="review-mission-input" rows="3" style="width:100%;margin:1rem 0;padding:8px;border-radius:5px;border:1px solid #ddd;" placeholder="한 줄 리뷰를 남겨주세요!"></textarea><button class="button" id="review-mission-btn">리뷰 제출</button>`;
+            } else if (type === 'vote') {
+                content += `<button class="button" id="vote-mission-btn" style="margin-top:1rem;">투표하러 가기</button>`;
+            }
+            content += `</div>`;
+            document.getElementById('main-content').innerHTML = content;
+            // 미션 입력/완료 이벤트
+            if (!missionResults[missionId]) {
+                if (type === 'visit') {
+                    document.getElementById('visit-mission-btn').onclick = function() {
+                        if (!navigator.geolocation) return alert('위치 권한이 필요합니다!');
+                        navigator.geolocation.getCurrentPosition(pos => {
+                            missionResults[missionId] = { completed: true, date: Date.now() };
+                            localStorage.setItem('missionCompletions', JSON.stringify(missionResults));
+                            alert('위치 인증 미션 완료!');
+                            window.location.hash = '#mission';
+                        }, err => {
+                            alert('위치 인증에 실패했습니다.');
+                        });
+                    };
+                } else if (type === 'review') {
+                    document.getElementById('review-mission-btn').onclick = function() {
+                        const val = document.getElementById('review-mission-input').value.trim();
+                        if (!val) return alert('리뷰를 입력해주세요!');
+                        missionResults[missionId] = { completed: true, review: val, date: Date.now() };
+                        localStorage.setItem('missionCompletions', JSON.stringify(missionResults));
+                        alert('리뷰 미션 완료!');
+                        window.location.hash = '#mission';
+                    };
+                } else if (type === 'vote') {
+                    document.getElementById('vote-mission-btn').onclick = function() {
+                        window.location.hash = '#suggest';
+                    };
+                }
+            }
+        });
+    },
+
     '#vote-mission': renderVoteMission
 };
 
@@ -353,85 +440,6 @@ function renderSuggestedList() {
     });
 }
 
-// 미션 상세에서 '미션 목록으로' 버튼 동작 연결
-function showMissionDetail(missionId) {
-    fetch('missions.json')
-        .then(res => res.json())
-        .then(missions => {
-            const m = missions.find(x => x.id === missionId);
-            if (!m) return;
-            const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
-            let content = `<div class="card" style="max-width:500px;margin:2rem auto;">
-                <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
-                <p style="color:#666;">${m.description}</p>
-                <div style="margin:1rem 0;">
-                    <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
-                </div>
-            `;
-            if (missionResults[m.id]) {
-                content += `<div class="badge" style="background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">이미 완료한 미션입니다!</div>`;
-                content += `<button class="button" id="to-mission-history-btn" style="margin-top:1.5rem;">내 미션 히스토리</button>`;
-            } else {
-                if (m.type === 'visit') {
-                    content += `<button class="button" id="visit-mission-btn">위치 인증하기</button>`;
-                } else if (m.type === 'review') {
-                    content += `<textarea id="review-mission-input" rows="3" style="width:100%;margin:1rem 0;padding:8px;border-radius:5px;border:1px solid #ddd;" placeholder="한 줄 리뷰를 남겨주세요!"></textarea><button class="button" id="review-mission-btn">리뷰 제출</button>`;
-                } else if (m.type === 'vote') {
-                    content += `<button class="button" id="vote-mission-btn">추천 맛집 투표하러 가기</button>`;
-                }
-            }
-            content += `<button class="button" id="to-mission-list-btn" style="margin-top:1.5rem;background:#eee;color:#333;">미션 목록으로</button></div>`;
-            document.getElementById('main-content').innerHTML = content;
-            // 미션 목록으로 버튼 동작
-            document.getElementById('to-mission-list-btn').onclick = function() {
-                window.location.hash = '#mission';
-            };
-            // 추가: 회색 "미션 목록으로" 버튼도 동작하도록 보장
-            document.querySelectorAll('button').forEach(btn => {
-                if (btn.textContent.trim() === '미션 목록으로') {
-                    btn.onclick = function() {
-                        window.location.hash = '#mission';
-                    };
-                }
-            });
-            // 완료된 미션일 때 히스토리로 이동 버튼 동작
-            if (missionResults[m.id]) {
-                document.getElementById('to-mission-history-btn').onclick = function() {
-                    window.location.hash = '#mission-history';
-                };
-            }
-            if (!missionResults[m.id]) {
-                if (m.type === 'visit') {
-                    document.getElementById('visit-mission-btn').onclick = function() {
-                        if (!navigator.geolocation) return alert('위치 권한이 필요합니다!');
-                        navigator.geolocation.getCurrentPosition(pos => {
-                            missionResults[m.id] = { completed: true, date: Date.now() };
-                            localStorage.setItem('missionCompletions', JSON.stringify(missionResults));
-                            alert('위치 인증 미션 완료!');
-                            window.location.hash = '#mission';
-                        }, err => {
-                            alert('위치 인증에 실패했습니다.');
-                        });
-                    };
-                } else if (m.type === 'review') {
-                    document.getElementById('review-mission-btn').onclick = function() {
-                        const val = document.getElementById('review-mission-input').value.trim();
-                        if (!val) return alert('리뷰를 입력해주세요!');
-                        missionResults[m.id] = { completed: true, review: val, date: Date.now() };
-                        localStorage.setItem('missionCompletions', JSON.stringify(missionResults));
-                        alert('리뷰 미션 완료!');
-                        window.location.hash = '#mission';
-                    };
-                } else if (m.type === 'vote') {
-                    document.getElementById('vote-mission-btn').onclick = function() {
-                        window.location.hash = '#suggest';
-                    };
-                }
-            }
-            bindMissionListButtons();
-        });
-}
-
 // 추천 맛집 투표 미션 화면(투표 뱃지, 추천 맛집 투표하러 가기, 미션 목록으로 등)
 function renderVoteMission() {
     const content = `
@@ -469,13 +477,13 @@ function bindMissionListButtons() {
 // Initialize router
 const router = new Router(routes);
 
-// 미션 목록에서 '진행 중' 버튼 클릭 시 상세로 이동
-// (이벤트 위임: main-content에 위임)
+// 진행 중 버튼 클릭 시 무조건 상세 화면으로 이동
+// (이벤트 위임)
 document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('mission-btn')) {
-        const missionId = e.target.dataset.id;
-        if (missionId) {
-            showMissionDetail(Number(missionId));
+    if (e.target.classList.contains('mission-detail-btn')) {
+        const id = e.target.dataset.id;
+        if (id) {
+            window.location.hash = `#mission-detail?id=${id}`;
         }
     }
 });
