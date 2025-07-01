@@ -24,7 +24,7 @@ class Router {
         if (typeof cleanupMap === 'function') {
             cleanupMap();
         }
-        const hash = window.location.hash || '#home';
+        const hash = (window.location.hash || '#home').split('?')[0];
         const route = this.routes[hash];
         
         if (route) {
