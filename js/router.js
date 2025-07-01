@@ -452,7 +452,7 @@ function bindMissionListButtons() {
     }, 0);
 }
 
-// 진행 중 버튼 직접 바인딩 함수
+// 진행 중 버튼 직접 바인딩 함수 (setTimeout으로 강제 라우팅)
 function bindMissionCategoryButtons() {
     setTimeout(() => {
         document.querySelectorAll('.mission-cat-btn').forEach(btn => {
@@ -460,18 +460,19 @@ function bindMissionCategoryButtons() {
                 const type = btn.dataset.type;
                 if (type) {
                     window.location.hash = `#mission-list?type=${type}`;
-                    // 라우터가 즉시 동작하도록 직접 호출
-                    if (typeof router?.handleRoute === 'function') {
-                        router.handleRoute();
-                    }
+                    setTimeout(() => {
+                        if (window.router && typeof window.router.handleRoute === 'function') {
+                            window.router.handleRoute();
+                        }
+                    }, 10);
                 }
             };
         });
     }, 0);
 }
 
-// Initialize router
-const router = new Router(routes);
+// Initialize router (window에 노출)
+window.router = new Router(routes);
 
 // 이벤트 위임: 카테고리/표/상세/뒤로가기/첫화면
 document.addEventListener('click', function(e) {
