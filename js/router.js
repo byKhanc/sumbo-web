@@ -143,34 +143,81 @@ const routes = {
     },
 
     '#mission': () => {
-        fetch('missions.json')
-            .then(res => res.json())
-            .then(missions => {
-                const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
-                let content = `<h1 class="page-title">미션</h1><div class="grid">`;
-                missions.forEach(m => {
-                    // 완료 횟수 계산 (missionResults가 배열이거나, id별로 여러 번 저장되는 구조라면 수정 필요)
-                    let doneCount = 0;
-                    if (Array.isArray(missionResults[m.id])) {
-                        doneCount = missionResults[m.id].length;
-                    } else if (missionResults[m.id]) {
-                        doneCount = 1;
-                    }
-                    content += `
-                        <div class="card mission-card" style="position:relative;">
-                            <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
-                            <p style="color:#666;">${m.description}</p>
-                            <div style="margin:1rem 0;">
-                                <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
-                            </div>
-                            <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">진행 중</button>
-                            <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${doneCount}회 완료</div>
+        Promise.all([
+            fetch('missions.json').then(res => res.json()),
+            fetch('restaurants.json').then(res => res.json())
+        ]).then(([missions, restaurants]) => {
+            const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
+            let content = `<h1 class="page-title">미션</h1><div class="grid">`;
+            // 1-1. 기본 미션(missions.json)
+            missions.forEach(m => {
+                let doneCount = 0;
+                if (Array.isArray(missionResults[m.id])) {
+                    doneCount = missionResults[m.id].length;
+                } else if (missionResults[m.id]) {
+                    doneCount = 1;
+                }
+                content += `
+                    <div class="card mission-card" style="position:relative;">
+                        <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
+                        <p style="color:#666;">${m.description}</p>
+                        <div style="margin:1rem 0;">
+                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
                         </div>
-                    `;
-                });
-                content += '</div>';
-                document.getElementById('main-content').innerHTML = content;
+                        <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">진행 중</button>
+                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${doneCount}회 완료</div>
+                    </div>
+                `;
             });
+            // 1-2. 맛집별 방문/리뷰/투표 미션 동적 생성
+            restaurants.forEach(r => {
+                // 방문 인증 미션
+                const visitKey = `visit_${r.id}`;
+                const visitDone = missionResults[visitKey];
+                content += `
+                    <div class="card mission-card" style="position:relative;">
+                        <h2 style="margin-bottom:0.5rem;">[방문] ${r.name}</h2>
+                        <p style="color:#666;">${r.mission || r.description}</p>
+                        <div style="margin:1rem 0;">
+                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">방문 인증</span>
+                        </div>
+                        <button class="button mission-btn" data-id="${visitKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${visitDone ? '완료' : '진행 중'}</button>
+                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${visitDone ? '1회 완료' : '0회 완료'}</div>
+                    </div>
+                `;
+                // 리뷰 미션
+                const reviewKey = `review_${r.id}`;
+                const reviewDone = missionResults[reviewKey];
+                content += `
+                    <div class="card mission-card" style="position:relative;">
+                        <h2 style="margin-bottom:0.5rem;">[리뷰] ${r.name}</h2>
+                        <p style="color:#666;">${r.mission || r.description}</p>
+                        <div style="margin:1rem 0;">
+                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">리뷰</span>
+                        </div>
+                        <button class="button mission-btn" data-id="${reviewKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${reviewDone ? '완료' : '진행 중'}</button>
+                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${reviewDone ? '1회 완료' : '0회 완료'}</div>
+                    </div>
+                `;
+                // 투표 미션(예시)
+                const voteKey = `vote_${r.id}`;
+                const voteDone = missionResults[voteKey];
+                content += `
+                    <div class="card mission-card" style="position:relative;">
+                        <h2 style="margin-bottom:0.5rem;">[투표] ${r.name}</h2>
+                        <p style="color:#666;">이 맛집에 투표해보세요!</p>
+                        <div style="margin:1rem 0;">
+                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">투표</span>
+                        </div>
+                        <button class="button mission-btn" data-id="${voteKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${voteDone ? '완료' : '진행 중'}</button>
+                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${voteDone ? '1회 완료' : '0회 완료'}</div>
+                    </div>
+                `;
+            });
+            content += '</div>';
+            document.getElementById('main-content').innerHTML = content;
+            bindMissionListButtons();
+        });
     },
 
     '#suggest': () => {
@@ -381,6 +428,7 @@ function showMissionDetail(missionId) {
                     };
                 }
             }
+            bindMissionListButtons();
         });
 }
 
@@ -404,6 +452,18 @@ function renderVoteMission() {
     document.getElementById('to-mission-list-btn').onclick = function() {
         window.location.hash = '#mission';
     };
+    bindMissionListButtons();
+}
+
+// 미션 상세, 추천 맛집 투표, 히스토리 등에서 '미션 목록으로' 버튼 클릭 시 항상 미션 첫 화면으로 이동
+function bindMissionListButtons() {
+    setTimeout(() => {
+        document.querySelectorAll('#to-mission-list-btn, .to-mission-list-btn').forEach(btn => {
+            btn.onclick = function() {
+                window.location.hash = '#mission';
+            };
+        });
+    }, 0);
 }
 
 // Initialize router
@@ -417,5 +477,24 @@ document.addEventListener('click', function(e) {
         if (missionId) {
             showMissionDetail(Number(missionId));
         }
+    }
+});
+
+// 모든 '미션 목록으로' 버튼은 bindMissionListButtons()로 통일 관리 (이미 적용)
+// 사이드바 메뉴(nav-link) 클릭 시 라우터가 항상 정상 동작하도록 보장
+// (SPA 라우터가 hashchange 이벤트로 동작하므로, nav-link 클릭 시 hash만 바뀌면 자동으로 라우팅)
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        document.querySelector('.nav-link.active')?.classList.remove('active');
+        e.target.closest('.nav-link').classList.add('active');
+        // hash 변경만 하면 라우터가 동작함
+    });
+});
+
+// '뒤로 가기' 버튼(.back-btn)이 있으면 history.back()으로 동작하도록 이벤트 위임 추가
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('back-btn')) {
+        e.preventDefault();
+        history.back();
     }
 }); 
