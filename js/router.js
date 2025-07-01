@@ -164,6 +164,7 @@ const routes = {
             </div>
         `;
         document.getElementById('main-content').innerHTML = content;
+        bindMissionCategoryButtons();
     },
 
     '#mission-list': () => {
@@ -440,12 +441,26 @@ function renderVoteMission() {
     bindMissionListButtons();
 }
 
-// 미션 상세, 추천 맛집 투표, 히스토리 등에서 '미션 목록으로' 버튼 클릭 시 항상 미션 첫 화면으로 이동
+// 미션 목록으로 버튼 클릭 시 항상 미션 첫 화면으로 이동
 function bindMissionListButtons() {
     setTimeout(() => {
         document.querySelectorAll('#to-mission-list-btn, .to-mission-list-btn').forEach(btn => {
             btn.onclick = function() {
                 window.location.hash = '#mission';
+            };
+        });
+    }, 0);
+}
+
+// 진행 중 버튼 직접 바인딩 함수
+function bindMissionCategoryButtons() {
+    setTimeout(() => {
+        document.querySelectorAll('.mission-cat-btn').forEach(btn => {
+            btn.onclick = function() {
+                const type = btn.dataset.type;
+                if (type) {
+                    window.location.hash = `#mission-list?type=${type}`;
+                }
             };
         });
     }, 0);

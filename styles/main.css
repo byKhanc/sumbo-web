@@ -319,4 +319,10 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.card.mission-category-card {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
 } 
