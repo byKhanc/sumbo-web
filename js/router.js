@@ -460,6 +460,10 @@ function bindMissionCategoryButtons() {
                 const type = btn.dataset.type;
                 if (type) {
                     window.location.hash = `#mission-list?type=${type}`;
+                    // 라우터가 즉시 동작하도록 직접 호출
+                    if (typeof router?.handleRoute === 'function') {
+                        router.handleRoute();
+                    }
                 }
             };
         });
