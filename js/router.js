@@ -143,144 +143,56 @@ const routes = {
     },
 
     '#mission': () => {
-        Promise.all([
-            fetch('missions.json').then(res => res.json()),
-            fetch('restaurants.json').then(res => res.json())
-        ]).then(([missions, restaurants]) => {
-            const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
-            let content = `<h1 class="page-title">미션</h1><div class="grid">`;
-            // 기본 미션(missions.json)
-            missions.forEach(m => {
-                let doneCount = 0;
-                if (Array.isArray(missionResults[m.id])) {
-                    doneCount = missionResults[m.id].length;
-                } else if (missionResults[m.id]) {
-                    doneCount = 1;
-                }
-                content += `
-                    <div class="card mission-card" style="position:relative;">
-                        <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
-                        <div style="margin:1rem 0;">
-                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
-                        </div>
-                        <button class="button mission-detail-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">진행 중</button>
-                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${doneCount}회 완료</div>
-                    </div>
-                `;
-            });
-            // 맛집별 방문/리뷰/투표 미션 동적 생성
-            restaurants.forEach(r => {
-                // 방문 인증 미션
-                const visitKey = `visit_${r.id}`;
-                const visitDone = missionResults[visitKey];
-                content += `
-                    <div class="card mission-card" style="position:relative;">
-                        <h2 style="margin-bottom:0.5rem;">[방문] ${r.name}</h2>
-                        <div style="margin:1rem 0;">
-                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">방문 인증</span>
-                        </div>
-                        <button class="button mission-detail-btn" data-id="${visitKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${visitDone ? '완료' : '진행 중'}</button>
-                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${visitDone ? '1회 완료' : '0회 완료'}</div>
-                    </div>
-                `;
-                // 리뷰 미션
-                const reviewKey = `review_${r.id}`;
-                const reviewDone = missionResults[reviewKey];
-                content += `
-                    <div class="card mission-card" style="position:relative;">
-                        <h2 style="margin-bottom:0.5rem;">[리뷰] ${r.name}</h2>
-                        <div style="margin:1rem 0;">
-                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">리뷰</span>
-                        </div>
-                        <button class="button mission-detail-btn" data-id="${reviewKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${reviewDone ? '완료' : '진행 중'}</button>
-                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${reviewDone ? '1회 완료' : '0회 완료'}</div>
-                    </div>
-                `;
-                // 투표 미션(예시)
-                const voteKey = `vote_${r.id}`;
-                const voteDone = missionResults[voteKey];
-                content += `
-                    <div class="card mission-card" style="position:relative;">
-                        <h2 style="margin-bottom:0.5rem;">[투표] ${r.name}</h2>
-                        <div style="margin:1rem 0;">
-                            <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">투표</span>
-                        </div>
-                        <button class="button mission-detail-btn" data-id="${voteKey}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">${voteDone ? '완료' : '진행 중'}</button>
-                        <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${voteDone ? '1회 완료' : '0회 완료'}</div>
-                    </div>
-                `;
-            });
-            content += '</div>';
-            document.getElementById('main-content').innerHTML = content;
-        });
-    },
-
-    '#suggest': () => {
-        let content = `
-            <h1 class="page-title">추천 맛집</h1>
-            <div class="card">
-                <h2>맛집 추천 등록</h2>
-                <form id="suggest-form">
-                    <input type="text" id="suggest-name" placeholder="맛집 이름" required style="width:100%;margin-bottom:8px;padding:8px;">
-                    <input type="text" id="suggest-address" placeholder="주소" required style="width:100%;margin-bottom:8px;padding:8px;">
-                    <input type="text" id="suggest-desc" placeholder="설명" required style="width:100%;margin-bottom:8px;padding:8px;">
-                    <input type="number" id="suggest-lat" placeholder="위도(예: 37.5665)" required step="any" style="width:49%;margin-bottom:8px;padding:8px;">
-                    <input type="number" id="suggest-lng" placeholder="경도(예: 126.978)" required step="any" style="width:49%;margin-bottom:8px;padding:8px;float:right;">
-                    <button type="submit" class="button" style="width:100%;margin-top:8px;">추천 등록</button>
-                </form>
-            </div>
-            <div class="card" style="margin-top:2rem;">
-                <h2>추천 대기 맛집 목록</h2>
-                <div id="suggested-list"></div>
+        const content = `
+            <h1 class="page-title">미션</h1>
+            <div class="card-grid">
+                <div class="card mission-category-card">
+                    <h2>인증 미션</h2>
+                    <p>지정된 맛집에 방문하고 위치 인증을 해주세요.</p>
+                    <button class="button mission-cat-btn" data-type="visit" style="width:100%;margin-top:1rem;">인증 미션 보기</button>
+                </div>
+                <div class="card mission-category-card">
+                    <h2>리뷰 미션</h2>
+                    <p>방문한 맛집에 한 줄 리뷰를 남겨주세요.</p>
+                    <button class="button mission-cat-btn" data-type="review" style="width:100%;margin-top:1rem;">리뷰 미션 보기</button>
+                </div>
+                <div class="card mission-category-card">
+                    <h2>투표 미션</h2>
+                    <p>맛집에 투표해보세요.</p>
+                    <button class="button mission-cat-btn" data-type="vote" style="width:100%;margin-top:1rem;">투표 미션 보기</button>
+                </div>
             </div>
         `;
         document.getElementById('main-content').innerHTML = content;
-        renderSuggestedList();
-        document.getElementById('suggest-form').onsubmit = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('suggest-name').value.trim();
-            const address = document.getElementById('suggest-address').value.trim();
-            const desc = document.getElementById('suggest-desc').value.trim();
-            const lat = parseFloat(document.getElementById('suggest-lat').value);
-            const lng = parseFloat(document.getElementById('suggest-lng').value);
-            if (!name || !address || !desc || isNaN(lat) || isNaN(lng)) return alert('모든 항목을 입력해주세요!');
-            let suggested = JSON.parse(localStorage.getItem('suggestedRestaurants') || '[]');
-            suggested.push({ id: Date.now(), name, address, description: desc, lat, lng, votes: 0, voters: [] });
-            localStorage.setItem('suggestedRestaurants', JSON.stringify(suggested));
-            alert('추천이 등록되었습니다!');
-            this.reset();
-            renderSuggestedList();
-        };
     },
 
-    '#mission-history': () => {
-        fetch('missions.json')
-            .then(res => res.json())
-            .then(missions => {
-                const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
-                let completed = missions.filter(m => missionResults[m.id]);
-                let content = `<h1 class="page-title">내 미션 히스토리</h1>`;
-                if (completed.length === 0) {
-                    content += `<div class="card"><h2>아직 완료한 미션이 없습니다.</h2></div>`;
-                } else {
-                    content += '<div class="card-grid">';
-                    completed.forEach(m => {
-                        const result = missionResults[m.id];
-                        content += `<div class="card">
-                            <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
-                            <p style="color:#666;">${m.description}</p>
-                            <div style="margin:1rem 0;">
-                                <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
-                            </div>
-                            <div style="color:#16a34a;font-weight:bold;">완료일: ${new Date(result.date).toLocaleString()}</div>
-                            ${result.review ? `<div style='margin-top:0.5rem;'><b>리뷰:</b> ${result.review}</div>` : ''}
-                        </div>`;
-                    });
-                    content += '</div>';
-                }
-                content += `<button class="button" style="margin-top:2rem;" onclick="window.location.hash='#mission'">미션 목록으로</button>`;
-                document.getElementById('main-content').innerHTML = content;
+    '#mission-list': () => {
+        const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+        const type = params.get('type');
+        if (!type) return;
+        fetch('restaurants.json').then(res => res.json()).then(restaurants => {
+            const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
+            let title = type === 'visit' ? '인증 미션' : type === 'review' ? '리뷰 미션' : '투표 미션';
+            let content = `<h1 class="page-title">${title} 맛집 목록</h1>`;
+            content += `<table class="mission-table" style="width:100%;border-collapse:collapse;margin:2rem 0;">
+                <thead><tr>
+                    <th style="padding:8px 4px;border-bottom:2px solid #2563eb;text-align:left;">맛집명</th>
+                    <th style="padding:8px 4px;border-bottom:2px solid #2563eb;text-align:left;">주소</th>
+                    <th style="padding:8px 4px;border-bottom:2px solid #2563eb;text-align:left;">상태</th>
+                </tr></thead><tbody>`;
+            restaurants.forEach(r => {
+                const key = `${type}_${r.id}`;
+                const done = missionResults[key];
+                content += `<tr class="mission-table-row" data-id="${key}" style="cursor:pointer;">
+                    <td style="padding:8px 4px;border-bottom:1px solid #eee;">${r.name}</td>
+                    <td style="padding:8px 4px;border-bottom:1px solid #eee;">${r.address}</td>
+                    <td style="padding:8px 4px;border-bottom:1px solid #eee;">${done ? '완료' : '진행 중'}</td>
+                </tr>`;
             });
+            content += `</tbody></table>`;
+            content += `<button class="button back-btn" style="background:#eee;color:#333;">← 뒤로 가기</button>`;
+            document.getElementById('main-content').innerHTML = content;
+        });
     },
 
     '#mission-detail': () => {
@@ -373,6 +285,74 @@ const routes = {
                 }
             }
         });
+    },
+
+    '#suggest': () => {
+        let content = `
+            <h1 class="page-title">추천 맛집</h1>
+            <div class="card">
+                <h2>맛집 추천 등록</h2>
+                <form id="suggest-form">
+                    <input type="text" id="suggest-name" placeholder="맛집 이름" required style="width:100%;margin-bottom:8px;padding:8px;">
+                    <input type="text" id="suggest-address" placeholder="주소" required style="width:100%;margin-bottom:8px;padding:8px;">
+                    <input type="text" id="suggest-desc" placeholder="설명" required style="width:100%;margin-bottom:8px;padding:8px;">
+                    <input type="number" id="suggest-lat" placeholder="위도(예: 37.5665)" required step="any" style="width:49%;margin-bottom:8px;padding:8px;">
+                    <input type="number" id="suggest-lng" placeholder="경도(예: 126.978)" required step="any" style="width:49%;margin-bottom:8px;padding:8px;float:right;">
+                    <button type="submit" class="button" style="width:100%;margin-top:8px;">추천 등록</button>
+                </form>
+            </div>
+            <div class="card" style="margin-top:2rem;">
+                <h2>추천 대기 맛집 목록</h2>
+                <div id="suggested-list"></div>
+            </div>
+        `;
+        document.getElementById('main-content').innerHTML = content;
+        renderSuggestedList();
+        document.getElementById('suggest-form').onsubmit = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('suggest-name').value.trim();
+            const address = document.getElementById('suggest-address').value.trim();
+            const desc = document.getElementById('suggest-desc').value.trim();
+            const lat = parseFloat(document.getElementById('suggest-lat').value);
+            const lng = parseFloat(document.getElementById('suggest-lng').value);
+            if (!name || !address || !desc || isNaN(lat) || isNaN(lng)) return alert('모든 항목을 입력해주세요!');
+            let suggested = JSON.parse(localStorage.getItem('suggestedRestaurants') || '[]');
+            suggested.push({ id: Date.now(), name, address, description: desc, lat, lng, votes: 0, voters: [] });
+            localStorage.setItem('suggestedRestaurants', JSON.stringify(suggested));
+            alert('추천이 등록되었습니다!');
+            this.reset();
+            renderSuggestedList();
+        };
+    },
+
+    '#mission-history': () => {
+        fetch('missions.json')
+            .then(res => res.json())
+            .then(missions => {
+                const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
+                let completed = missions.filter(m => missionResults[m.id]);
+                let content = `<h1 class="page-title">내 미션 히스토리</h1>`;
+                if (completed.length === 0) {
+                    content += `<div class="card"><h2>아직 완료한 미션이 없습니다.</h2></div>`;
+                } else {
+                    content += '<div class="card-grid">';
+                    completed.forEach(m => {
+                        const result = missionResults[m.id];
+                        content += `<div class="card">
+                            <h2 style="margin-bottom:0.5rem;">${m.title}</h2>
+                            <p style="color:#666;">${m.description}</p>
+                            <div style="margin:1rem 0;">
+                                <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
+                            </div>
+                            <div style="color:#16a34a;font-weight:bold;">완료일: ${new Date(result.date).toLocaleString()}</div>
+                            ${result.review ? `<div style='margin-top:0.5rem;'><b>리뷰:</b> ${result.review}</div>` : ''}
+                        </div>`;
+                    });
+                    content += '</div>';
+                }
+                content += `<button class="button" style="margin-top:2rem;" onclick="window.location.hash='#mission'">미션 목록으로</button>`;
+                document.getElementById('main-content').innerHTML = content;
+            });
     },
 
     '#vote-mission': renderVoteMission
@@ -480,11 +460,22 @@ const router = new Router(routes);
 // 진행 중 버튼 클릭 시 무조건 상세 화면으로 이동
 // (이벤트 위임)
 document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('mission-detail-btn')) {
-        const id = e.target.dataset.id;
+    if (e.target.classList.contains('mission-cat-btn')) {
+        const type = e.target.dataset.type;
+        if (type) {
+            window.location.hash = `#mission-list?type=${type}`;
+        }
+    }
+    if (e.target.closest && e.target.closest('.mission-table-row')) {
+        const row = e.target.closest('.mission-table-row');
+        const id = row.dataset.id;
         if (id) {
             window.location.hash = `#mission-detail?id=${id}`;
         }
+    }
+    if (e.target.classList.contains('back-btn')) {
+        e.preventDefault();
+        history.back();
     }
 });
 
@@ -497,12 +488,4 @@ document.querySelectorAll('.nav-link').forEach(link => {
         e.target.closest('.nav-link').classList.add('active');
         // hash 변경만 하면 라우터가 동작함
     });
-});
-
-// '뒤로 가기' 버튼(.back-btn)이 있으면 history.back()으로 동작하도록 이벤트 위임 추가
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('back-btn')) {
-        e.preventDefault();
-        history.back();
-    }
 }); 
