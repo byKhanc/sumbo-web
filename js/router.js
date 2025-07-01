@@ -149,17 +149,17 @@ const routes = {
                 <div class="card mission-category-card">
                     <h2>인증 미션</h2>
                     <p>지정된 맛집에 방문하고 위치 인증을 해주세요.</p>
-                    <button class="button mission-cat-btn" data-type="visit" style="width:100%;margin-top:1rem;">인증 미션 보기</button>
+                    <button class="button mission-cat-btn" data-type="visit" style="width:100%;margin-top:1rem;">진행 중</button>
                 </div>
                 <div class="card mission-category-card">
                     <h2>리뷰 미션</h2>
                     <p>방문한 맛집에 한 줄 리뷰를 남겨주세요.</p>
-                    <button class="button mission-cat-btn" data-type="review" style="width:100%;margin-top:1rem;">리뷰 미션 보기</button>
+                    <button class="button mission-cat-btn" data-type="review" style="width:100%;margin-top:1rem;">진행 중</button>
                 </div>
                 <div class="card mission-category-card">
                     <h2>투표 미션</h2>
                     <p>맛집에 투표해보세요.</p>
-                    <button class="button mission-cat-btn" data-type="vote" style="width:100%;margin-top:1rem;">투표 미션 보기</button>
+                    <button class="button mission-cat-btn" data-type="vote" style="width:100%;margin-top:1rem;">진행 중</button>
                 </div>
             </div>
         `;
@@ -174,7 +174,7 @@ const routes = {
             const missionResults = JSON.parse(localStorage.getItem('missionCompletions') || '{}');
             let title = type === 'visit' ? '인증 미션' : type === 'review' ? '리뷰 미션' : '투표 미션';
             let content = `<h1 class="page-title">${title} 맛집 목록</h1>`;
-            content += `<table class="mission-table" style="width:100%;border-collapse:collapse;margin:2rem 0;">
+            content += `<div style="overflow-x:auto;"><table class="mission-table" style="width:100%;border-collapse:collapse;margin:2rem 0;min-width:400px;">
                 <thead><tr>
                     <th style="padding:8px 4px;border-bottom:2px solid #2563eb;text-align:left;">맛집명</th>
                     <th style="padding:8px 4px;border-bottom:2px solid #2563eb;text-align:left;">주소</th>
@@ -189,8 +189,8 @@ const routes = {
                     <td style="padding:8px 4px;border-bottom:1px solid #eee;">${done ? '완료' : '진행 중'}</td>
                 </tr>`;
             });
-            content += `</tbody></table>`;
-            content += `<button class="button back-btn" style="background:#eee;color:#333;">← 뒤로 가기</button>`;
+            content += `</tbody></table></div>`;
+            content += `<div style="margin-top:2rem;display:flex;gap:1rem;"><button class="button back-btn" style="background:#eee;color:#333;">← 뒤로 가기</button><button class="button to-mission-home-btn" style="background:#2563eb;color:#fff;">미션 첫 화면으로</button></div>`;
             document.getElementById('main-content').innerHTML = content;
         });
     },
@@ -199,7 +199,6 @@ const routes = {
         const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
         const missionId = params.get('id');
         if (!missionId) return;
-        // 미션 정보 찾기
         Promise.all([
             fetch('missions.json').then(res => res.json()),
             fetch('restaurants.json').then(res => res.json())
@@ -209,7 +208,6 @@ const routes = {
             let r = null;
             let type = '';
             if (!m) {
-                // 맛집별 미션
                 if (missionId.startsWith('visit_')) {
                     type = 'visit';
                     const rid = missionId.replace('visit_', '');
@@ -225,16 +223,17 @@ const routes = {
                 }
             }
             let content = `<div class="card" style="max-width:500px;margin:2rem auto;">
-                <button class="button back-btn" style="margin-bottom:1rem;background:#eee;color:#333;">← 뒤로 가기</button>`;
+                <div style="display:flex;gap:1rem;margin-bottom:1rem;">
+                    <button class="button back-btn" style="background:#eee;color:#333;">← 뒤로 가기</button>
+                    <button class="button to-mission-home-btn" style="background:#2563eb;color:#fff;">미션 첫 화면으로</button>
+                </div>`;
             if (m) {
-                // 기본 미션 상세
                 content += `<h2 style="margin-bottom:0.5rem;">${m.title}</h2>
                     <p style="color:#666;">${m.description}</p>
                     <div style="margin:1rem 0;">
                         <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
                     </div>`;
             } else if (r) {
-                // 맛집별 미션 상세
                 content += `<h2 style="margin-bottom:0.5rem;">[${type === 'visit' ? '방문' : type === 'review' ? '리뷰' : '투표'}] ${r.name}</h2>
                     <p style="color:#666;">${r.mission || r.description}</p>
                     <div style="margin:1rem 0;">
@@ -243,7 +242,6 @@ const routes = {
             } else {
                 content += `<h2>미션 정보를 찾을 수 없습니다.</h2>`;
             }
-            // 미션 입력/완료 UI
             if (missionResults[missionId]) {
                 content += `<div class="badge" style="background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;margin:1rem 0;">이미 완료한 미션입니다!</div>`;
             } else if (type === 'visit') {
@@ -255,7 +253,6 @@ const routes = {
             }
             content += `</div>`;
             document.getElementById('main-content').innerHTML = content;
-            // 미션 입력/완료 이벤트
             if (!missionResults[missionId]) {
                 if (type === 'visit') {
                     document.getElementById('visit-mission-btn').onclick = function() {
@@ -457,15 +454,16 @@ function bindMissionListButtons() {
 // Initialize router
 const router = new Router(routes);
 
-// 진행 중 버튼 클릭 시 무조건 상세 화면으로 이동
-// (이벤트 위임)
+// 이벤트 위임: 카테고리/표/상세/뒤로가기/첫화면
 document.addEventListener('click', function(e) {
+    // 미션 카테고리 버튼
     if (e.target.classList.contains('mission-cat-btn')) {
         const type = e.target.dataset.type;
         if (type) {
             window.location.hash = `#mission-list?type=${type}`;
         }
     }
+    // 미션 표 행 클릭
     if (e.target.closest && e.target.closest('.mission-table-row')) {
         const row = e.target.closest('.mission-table-row');
         const id = row.dataset.id;
@@ -473,13 +471,17 @@ document.addEventListener('click', function(e) {
             window.location.hash = `#mission-detail?id=${id}`;
         }
     }
+    // 뒤로 가기 버튼
     if (e.target.classList.contains('back-btn')) {
         e.preventDefault();
         history.back();
     }
+    // 미션 첫 화면으로 버튼
+    if (e.target.classList.contains('to-mission-home-btn')) {
+        window.location.hash = '#mission';
+    }
 });
 
-// 모든 '미션 목록으로' 버튼은 bindMissionListButtons()로 통일 관리 (이미 적용)
 // 사이드바 메뉴(nav-link) 클릭 시 라우터가 항상 정상 동작하도록 보장
 // (SPA 라우터가 hashchange 이벤트로 동작하므로, nav-link 클릭 시 hash만 바뀌면 자동으로 라우팅)
 document.querySelectorAll('.nav-link').forEach(link => {
