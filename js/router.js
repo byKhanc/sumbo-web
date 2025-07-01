@@ -149,17 +149,17 @@ const routes = {
                 <div class="card mission-category-card">
                     <h2>인증 미션</h2>
                     <p>지정된 맛집에 방문하고 위치 인증을 해주세요.</p>
-                    <button class="button mission-cat-btn" data-type="visit" style="width:100%;margin-top:1rem;">진행 중</button>
+                    <button type="button" class="button mission-cat-btn" data-type="visit" style="width:100%;margin-top:1rem;">진행 중</button>
                 </div>
                 <div class="card mission-category-card">
                     <h2>리뷰 미션</h2>
                     <p>방문한 맛집에 한 줄 리뷰를 남겨주세요.</p>
-                    <button class="button mission-cat-btn" data-type="review" style="width:100%;margin-top:1rem;">진행 중</button>
+                    <button type="button" class="button mission-cat-btn" data-type="review" style="width:100%;margin-top:1rem;">진행 중</button>
                 </div>
                 <div class="card mission-category-card">
                     <h2>투표 미션</h2>
                     <p>맛집에 투표해보세요.</p>
-                    <button class="button mission-cat-btn" data-type="vote" style="width:100%;margin-top:1rem;">진행 중</button>
+                    <button type="button" class="button mission-cat-btn" data-type="vote" style="width:100%;margin-top:1rem;">진행 중</button>
                 </div>
             </div>
         `;
@@ -456,13 +456,18 @@ function bindMissionListButtons() {
 function bindMissionCategoryButtons() {
     setTimeout(() => {
         document.querySelectorAll('.mission-cat-btn').forEach(btn => {
-            btn.onclick = function() {
+            btn.onclick = function(e) {
+                e.preventDefault();
                 const type = btn.dataset.type;
+                console.log('진행 중 버튼 클릭됨', type);
                 if (type) {
                     window.location.hash = `#mission-list?type=${type}`;
                     setTimeout(() => {
                         if (window.router && typeof window.router.handleRoute === 'function') {
+                            console.log('라우터 강제 호출');
                             window.router.handleRoute();
+                        } else {
+                            console.log('window.router가 없음');
                         }
                     }, 10);
                 }
