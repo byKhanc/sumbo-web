@@ -213,6 +213,21 @@ function completeMission(restaurant) {
     localStorage.setItem('visitedRestaurants', JSON.stringify(visitedRestaurants));
     // Show mission completion modal with input
     showMissionModal(restaurant);
+    // --- 미션 성공 Notification 추가 ---
+    if (window.Notification && Notification.permission === 'granted') {
+        new Notification('미션 성공!', {
+            body: `${restaurant.name} 미션을 완료했습니다!`
+        });
+    } else if (window.Notification && Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification('미션 성공!', {
+                    body: `${restaurant.name} 미션을 완료했습니다!`
+                });
+            }
+        });
+    }
+    // --- 끝 ---
     // Update marker color
     const marker = restaurantMarkers.find(m => m.restaurantData.id === restaurant.id);
     if (marker) {
