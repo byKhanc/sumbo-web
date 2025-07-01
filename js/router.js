@@ -163,7 +163,7 @@ const routes = {
                             <div style="margin:1rem 0;">
                                 <span class="badge" style="background:#2563eb;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${m.reward}</span>
                             </div>
-                            <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:default;" disabled>진행 중</button>
+                            <button class="button mission-btn" data-id="${m.id}" style="width:100%;margin-top:1rem;background:#2563eb;color:white;cursor:pointer;">진행 중</button>
                             <div class="badge" style="position:absolute;top:1rem;right:1rem;background:#16a34a;color:white;padding:0.3em 0.8em;border-radius:1em;font-size:0.9em;">${doneCount}회 완료</div>
                         </div>
                     `;
