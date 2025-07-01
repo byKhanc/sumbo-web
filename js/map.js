@@ -74,7 +74,6 @@ async function initMap() {
                         localStorage.setItem('mainRestaurants', JSON.stringify(main));
                     }
                     alert('좋아요가 취소되었습니다!');
-                    map.closePopup();
                 } else {
                     // 좋아요
                     likes[rid]++;
@@ -90,8 +89,18 @@ async function initMap() {
                         localStorage.setItem('mainRestaurants', JSON.stringify(main));
                     }
                     alert('좋아요가 반영되었습니다!');
-                    map.closePopup();
                 }
+                // 좋아요/하이라이트 등 UI 즉시 갱신
+                restaurantMarkers.forEach(marker => {
+                    const r = marker.restaurantData;
+                    const isVisited = visitedRestaurants.includes(r.id);
+                    const isHighlight = r.highlightUntil && r.highlightUntil > Date.now();
+                    const likesCount = (JSON.parse(localStorage.getItem('restaurantLikes')||'{}')[r.id]||0);
+                    marker.setPopupContent(createRestaurantPopup(r, isVisited, isHighlight, likesCount));
+                });
+                // 팝업 다시 열기 (현재 마커)
+                const marker = restaurantMarkers.find(m => m.restaurantData.id == rid);
+                if (marker) marker.openPopup();
             };
         }
     });

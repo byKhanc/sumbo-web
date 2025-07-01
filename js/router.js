@@ -407,4 +407,15 @@ function renderVoteMission() {
 }
 
 // Initialize router
-const router = new Router(routes); 
+const router = new Router(routes);
+
+// 미션 목록에서 '진행 중' 버튼 클릭 시 상세로 이동
+// (이벤트 위임: main-content에 위임)
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('mission-btn')) {
+        const missionId = e.target.dataset.id;
+        if (missionId) {
+            showMissionDetail(Number(missionId));
+        }
+    }
+}); 
