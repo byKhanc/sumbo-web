@@ -15,28 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.location.hash) {
         window.location.hash = '#home';
     }
-
-    // 모드 토글(걷는 중/운전 중) 라디오 버튼 이벤트
-    const modeToggle = document.getElementById('mode-toggle');
-    if (modeToggle) {
-        const radios = modeToggle.querySelectorAll('input[name=moveMode]');
-        // 저장된 값으로 체크
-        const saved = localStorage.getItem('moveMode') || 'walk';
-        radios.forEach(radio => {
-            radio.checked = (radio.value === saved);
-            radio.onchange = function() {
-                if (this.checked) localStorage.setItem('moveMode', this.value);
-            };
-        });
-        // 알림 반복 허용 체크박스
-        const repeatAlarm = document.getElementById('repeat-alarm-toggle');
-        if (repeatAlarm) {
-            repeatAlarm.checked = localStorage.getItem('repeatAlarm') === 'true';
-            repeatAlarm.onchange = function() {
-                localStorage.setItem('repeatAlarm', this.checked);
-            };
-        }
-    }
 });
 
 // Mobile menu functionality
