@@ -161,13 +161,16 @@ function startLocationTracking(restaurants) {
                 const moveMode = localStorage.getItem('moveMode') || 'walk';
                 const alarmRange = moveMode === 'drive' ? 1000 : 100; // m
                 let alarmed = JSON.parse(localStorage.getItem('proximityAlarmed') || '{}');
+                const repeatAlarm = localStorage.getItem('repeatAlarm') === 'true';
                 restaurants.forEach(r => {
                     if (visitedRestaurants.includes(r.id)) return; // 이미 방문한 곳은 제외
                     const dist = getDistanceFromLatLonInM(latitude, longitude, r.lat, r.lng);
-                    if (dist < alarmRange && !alarmed[r.id]) {
-                        // 최초 1회만 알림
-                        alarmed[r.id] = true;
-                        localStorage.setItem('proximityAlarmed', JSON.stringify(alarmed));
+                    if (dist < alarmRange && (repeatAlarm || !alarmed[r.id])) {
+                        // 알림 반복 허용: proximityAlarmed 무시, 아니면 1회만 알림
+                        if (!repeatAlarm) {
+                            alarmed[r.id] = true;
+                            localStorage.setItem('proximityAlarmed', JSON.stringify(alarmed));
+                        }
                         // Notification API
                         if (window.Notification && Notification.permission === 'granted') {
                             new Notification('근처에 보물이 있습니다!', {

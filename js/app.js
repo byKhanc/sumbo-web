@@ -28,6 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (this.checked) localStorage.setItem('moveMode', this.value);
             };
         });
+        // 알림 반복 허용 체크박스
+        const repeatAlarm = document.getElementById('repeat-alarm-toggle');
+        if (repeatAlarm) {
+            repeatAlarm.checked = localStorage.getItem('repeatAlarm') === 'true';
+            repeatAlarm.onchange = function() {
+                localStorage.setItem('repeatAlarm', this.checked);
+            };
+        }
     }
 });
 
