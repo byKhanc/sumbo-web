@@ -66,7 +66,7 @@ const routes = {
                 </div>
             </div>
         `;
-        document.getElementById('main-content').innerHTML = content;
+        document.getElementById('page-content').innerHTML = content;
     },
 
     '#treasuremap': () => {
@@ -74,7 +74,7 @@ const routes = {
             <h1 class="page-title">보물 지도</h1>
             <div id="map-container"></div>
         `;
-        document.getElementById('main-content').innerHTML = content;
+        document.getElementById('page-content').innerHTML = content;
         initMap();
     },
 
@@ -128,10 +128,10 @@ const routes = {
                     `;
                 }
                 
-                document.getElementById('main-content').innerHTML = content;
+                document.getElementById('page-content').innerHTML = content;
             })
             .catch(error => {
-                document.getElementById('main-content').innerHTML = `
+                document.getElementById('page-content').innerHTML = `
                     <h1 class="page-title">내 맛집 기록</h1>
                     <div class="card">
                         <span class="material-icons">error</span>
@@ -163,7 +163,7 @@ const routes = {
                 </div>
             </div>
         `;
-        document.getElementById('main-content').innerHTML = content;
+        document.getElementById('page-content').innerHTML = content;
         bindMissionCategoryButtons();
     },
 
@@ -192,7 +192,7 @@ const routes = {
             });
             content += `</tbody></table></div>`;
             content += `<div style="margin-top:2rem;display:flex;gap:1rem;"><button class="button back-btn" style="background:#eee;color:#333;">← 뒤로 가기</button><button class="button to-mission-home-btn" style="background:#2563eb;color:#fff;">미션 첫 화면으로</button></div>`;
-            document.getElementById('main-content').innerHTML = content;
+            document.getElementById('page-content').innerHTML = content;
         });
     },
 
@@ -253,7 +253,7 @@ const routes = {
                 content += `<button class="button" id="vote-mission-btn" style="margin-top:1rem;">투표하러 가기</button>`;
             }
             content += `</div>`;
-            document.getElementById('main-content').innerHTML = content;
+            document.getElementById('page-content').innerHTML = content;
             if (!missionResults[missionId]) {
                 if (type === 'visit') {
                     document.getElementById('visit-mission-btn').onclick = function() {
@@ -304,7 +304,7 @@ const routes = {
                 <div id="suggested-list"></div>
             </div>
         `;
-        document.getElementById('main-content').innerHTML = content;
+        document.getElementById('page-content').innerHTML = content;
         renderSuggestedList();
         document.getElementById('suggest-form').onsubmit = function(e) {
             e.preventDefault();
@@ -349,7 +349,7 @@ const routes = {
                     content += '</div>';
                 }
                 content += `<button class="button" style="margin-top:2rem;" onclick="window.location.hash='#mission'">미션 목록으로</button>`;
-                document.getElementById('main-content').innerHTML = content;
+                document.getElementById('page-content').innerHTML = content;
             });
     },
 
@@ -431,7 +431,7 @@ function renderVoteMission() {
             <button class="button" id="to-mission-list-btn">미션 목록으로</button>
         </div>
     `;
-    document.getElementById('main-content').innerHTML = content;
+    document.getElementById('page-content').innerHTML = content;
     document.getElementById('go-vote-btn').onclick = function() {
         window.location.hash = '#suggest';
     };
