@@ -26,17 +26,13 @@ class Router {
         }
         const hash = (window.location.hash || '#home').split('?')[0];
         const route = this.routes[hash];
-        
-        if (route) {
-            this.mainContent.innerHTML = '';
-            this.mainContent.classList.remove('fade-in');
-            
-            // Add fade-in animation
-            setTimeout(() => {
-                this.mainContent.classList.add('fade-in');
-                route();
-            }, 10);
-        }
+        const pageContent = document.getElementById('page-content');
+        if (pageContent) pageContent.innerHTML = '';
+        this.mainContent.classList.remove('fade-in');
+        setTimeout(() => {
+            this.mainContent.classList.add('fade-in');
+            if (route) route();
+        }, 10);
     }
 }
 
