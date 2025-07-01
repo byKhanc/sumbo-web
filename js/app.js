@@ -15,6 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.location.hash) {
         window.location.hash = '#home';
     }
+
+    // 모드 토글(걷는 중/운전 중) 라디오 버튼 이벤트
+    const modeToggle = document.getElementById('mode-toggle');
+    if (modeToggle) {
+        const radios = modeToggle.querySelectorAll('input[name=moveMode]');
+        // 저장된 값으로 체크
+        const saved = localStorage.getItem('moveMode') || 'walk';
+        radios.forEach(radio => {
+            radio.checked = (radio.value === saved);
+            radio.onchange = function() {
+                if (this.checked) localStorage.setItem('moveMode', this.value);
+            };
+        });
+    }
 });
 
 // Mobile menu functionality
