@@ -16,8 +16,8 @@
   },
   {
     "id": 3,
-    "title": "추천 맛집 투표",
-    "description": "추천 맛집 중 한 곳에 투표해보세요.",
+    "title": "맛집 추천 투표",
+    "description": "맛집 추천 중 한 곳에 투표해보세요.",
     "type": "vote",
     "reward": "투표 뱃지"
   }
