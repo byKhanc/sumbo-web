@@ -166,13 +166,14 @@ function startLocationTracking(restaurants) {
                     if (visitedRestaurants.includes(r.id)) return; // 이미 방문한 곳은 제외
                     const dist = getDistanceFromLatLonInM(latitude, longitude, r.lat, r.lng);
                     if (dist < alarmRange && (repeatAlarm || !alarmed[r.id])) {
-                        // 알림 반복 허용: proximityAlarmed 무시, 아니면 1회만 알림
                         if (!repeatAlarm) {
                             alarmed[r.id] = true;
                             localStorage.setItem('proximityAlarmed', JSON.stringify(alarmed));
                         }
-                        // Notification/alert 대신 웹 모달(showMissionModal)만 띄움
-                        showMissionModal(r);
+                        // 미션 알림 기능 On일 때만 showMissionModal 실행
+                        if (localStorage.getItem('missionAlarmEnabled') !== 'false') {
+                            showMissionModal(r);
+                        }
                     }
                 });
                 // --- 위치 기반 알림 끝 ---
