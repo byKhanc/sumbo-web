@@ -171,21 +171,25 @@ function startLocationTracking(restaurants) {
                             alarmed[r.id] = true;
                             localStorage.setItem('proximityAlarmed', JSON.stringify(alarmed));
                         }
-                        // Notification API
-                        if (window.Notification && Notification.permission === 'granted') {
-                            new Notification('근처에 보물이 있습니다!', {
-                                body: `${r.name} (${Math.round(dist)}m)`
-                            });
-                        } else if (window.Notification && Notification.permission !== 'denied') {
-                            Notification.requestPermission().then(permission => {
-                                if (permission === 'granted') {
-                                    new Notification('근처에 보물이 있습니다!', {
-                                        body: `${r.name} (${Math.round(dist)}m)`
-                                    });
-                                } else {
-                                    alert(`근처에 보물이 있습니다!\n${r.name} (${Math.round(dist)}m)`);
-                                }
-                            });
+                        // Notification/alert: 설정값 반영
+                        if (localStorage.getItem('missionSuccessNotification') !== 'false') {
+                            if (window.Notification && Notification.permission === 'granted') {
+                                new Notification('근처에 보물이 있습니다!', {
+                                    body: `${r.name} (${Math.round(dist)}m)`
+                                });
+                            } else if (window.Notification && Notification.permission !== 'denied') {
+                                Notification.requestPermission().then(permission => {
+                                    if (permission === 'granted') {
+                                        new Notification('근처에 보물이 있습니다!', {
+                                            body: `${r.name} (${Math.round(dist)}m)`
+                                        });
+                                    } else {
+                                        alert(`근처에 보물이 있습니다!\n${r.name} (${Math.round(dist)}m)`);
+                                    }
+                                });
+                            } else {
+                                alert(`근처에 보물이 있습니다!\n${r.name} (${Math.round(dist)}m)`);
+                            }
                         } else {
                             alert(`근처에 보물이 있습니다!\n${r.name} (${Math.round(dist)}m)`);
                         }
