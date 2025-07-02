@@ -15,6 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.location.hash) {
         window.location.hash = '#home';
     }
+
+    // 설정 기본값 세팅
+    if (localStorage.getItem('moveMode') === null) {
+        localStorage.setItem('moveMode', 'walk');
+    }
+    if (localStorage.getItem('missionAlarmEnabled') === null) {
+        localStorage.setItem('missionAlarmEnabled', 'true');
+    }
+    if (localStorage.getItem('repeatAlarm') === null) {
+        localStorage.setItem('repeatAlarm', 'false');
+    }
 });
 
 // Mobile menu functionality
