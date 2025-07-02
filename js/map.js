@@ -211,21 +211,23 @@ function startLocationTracking(restaurants) {
 function completeMission(restaurant) {
     visitedRestaurants.push(restaurant.id);
     localStorage.setItem('visitedRestaurants', JSON.stringify(visitedRestaurants));
-    // Show mission completion modal with input
+    // Show mission completion modal with input (항상 웹 모달 띄움)
     showMissionModal(restaurant);
-    // --- 미션 성공 Notification 추가 ---
-    if (window.Notification && Notification.permission === 'granted') {
-        new Notification('미션 성공!', {
-            body: `${restaurant.name} 미션을 완료했습니다!`
-        });
-    } else if (window.Notification && Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                new Notification('미션 성공!', {
-                    body: `${restaurant.name} 미션을 완료했습니다!`
-                });
-            }
-        });
+    // --- 미션 성공 Notification: 설정값이 true일 때만 ---
+    if (localStorage.getItem('missionSuccessNotification') !== 'false') {
+        if (window.Notification && Notification.permission === 'granted') {
+            new Notification('미션 성공!', {
+                body: `${restaurant.name} 미션을 완료했습니다!`
+            });
+        } else if (window.Notification && Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification('미션 성공!', {
+                        body: `${restaurant.name} 미션을 완료했습니다!`
+                    });
+                }
+            });
+        }
     }
     // --- 끝 ---
     // Update marker color

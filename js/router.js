@@ -354,6 +354,7 @@ const routes = {
     '#settings': () => {
         const moveMode = localStorage.getItem('moveMode') || 'walk';
         const repeatAlarm = localStorage.getItem('repeatAlarm') === 'true';
+        const missionSuccessNotification = localStorage.getItem('missionSuccessNotification') !== 'false';
         const content = `
             <h1 class="page-title">설정</h1>
             <div class="card" style="margin-bottom:2rem;">
@@ -361,10 +362,15 @@ const routes = {
                 <label style="display:block;margin-bottom:0.5rem;font-weight:600;"><input type="radio" name="moveMode" value="walk" ${moveMode==='walk'?'checked':''}> 걷는 중</label>
                 <label style="display:block;font-weight:600;"><input type="radio" name="moveMode" value="drive" ${moveMode==='drive'?'checked':''}> 운전 중</label>
             </div>
-            <div class="card">
+            <div class="card" style="margin-bottom:2rem;">
                 <h2 style="margin-bottom:1rem;">알림 반복 허용</h2>
                 <label style="display:block;margin-bottom:0.5rem;font-weight:600;"><input type="radio" name="repeatAlarm" value="on" ${repeatAlarm?'checked':''}> On</label>
                 <label style="display:block;font-weight:600;"><input type="radio" name="repeatAlarm" value="off" ${!repeatAlarm?'checked':''}> Off</label>
+            </div>
+            <div class="card">
+                <h2 style="margin-bottom:1rem;">미션 성공 Notification</h2>
+                <label style="display:block;margin-bottom:0.5rem;font-weight:600;"><input type="radio" name="missionSuccessNotification" value="on" ${missionSuccessNotification?'checked':''}> On</label>
+                <label style="display:block;font-weight:600;"><input type="radio" name="missionSuccessNotification" value="off" ${!missionSuccessNotification?'checked':''}> Off</label>
             </div>
         `;
         document.getElementById('page-content').innerHTML = content;
@@ -377,6 +383,11 @@ const routes = {
         document.querySelectorAll('input[name=repeatAlarm]').forEach(radio => {
             radio.onchange = function() {
                 localStorage.setItem('repeatAlarm', this.value === 'on');
+            };
+        });
+        document.querySelectorAll('input[name=missionSuccessNotification]').forEach(radio => {
+            radio.onchange = function() {
+                localStorage.setItem('missionSuccessNotification', this.value === 'on');
             };
         });
     },
