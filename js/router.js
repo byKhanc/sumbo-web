@@ -283,7 +283,7 @@ const routes = {
 
     '#suggest': () => {
         let content = `
-            <h1 class="page-title">추천 맛집</h1>
+            <h1 class="page-title">맛집 추천</h1>
             <div class="card">
                 <h2>맛집 추천 등록</h2>
                 <form id="suggest-form">
@@ -455,16 +455,16 @@ function renderSuggestedList() {
     });
 }
 
-// 추천 맛집 투표 미션 화면(투표 뱃지, 추천 맛집 투표하러 가기, 미션 목록으로 등)
+// 맛집 추천 투표 미션 화면(투표 뱃지, 맛집 추천 투표하러 가기, 미션 목록으로 등)
 function renderVoteMission() {
     const content = `
         <div class="card" style="max-width:500px;margin:2rem auto;">
-            <h1 class="page-title">추천 맛집 투표</h1>
-            <p style="color:#666;">추천 맛집 중 한 곳에 투표해보세요.</p>
+            <h1 class="page-title">맛집 추천 투표</h1>
+            <p style="color:#666;">맛집 추천 중 한 곳에 투표해보세요.</p>
             <button class="button" style="margin-bottom:1.5rem;">투표 뱃지</button>
         </div>
         <div style="max-width:500px;margin:2rem auto 0 auto;display:flex;justify-content:flex-start;">
-            <button class="button" id="go-vote-btn" style="margin-right:1rem;">추천 맛집 투표하러 가기</button>
+            <button class="button" id="go-vote-btn" style="margin-right:1rem;">맛집 추천 투표하러 가기</button>
             <button class="button" id="to-mission-list-btn">미션 목록으로</button>
         </div>
     `;
