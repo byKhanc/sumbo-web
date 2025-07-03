@@ -159,7 +159,12 @@ function startLocationTracking(restaurants) {
                 });
                 // --- 위치 기반 알림 기능 추가 ---
                 const moveMode = localStorage.getItem('moveMode') || 'walk';
-                const alarmRange = moveMode === 'drive' ? 1000 : 100; // m
+                let alarmRange = 100;
+                if (moveMode === 'drive') {
+                    alarmRange = Number(localStorage.getItem('alarmRange_drive') || 1000);
+                } else {
+                    alarmRange = Number(localStorage.getItem('alarmRange_walk') || 100);
+                }
                 let alarmed = JSON.parse(localStorage.getItem('proximityAlarmed') || '{}');
                 const repeatAlarm = localStorage.getItem('repeatAlarm') === 'true';
                 restaurants.forEach(r => {

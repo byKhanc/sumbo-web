@@ -355,12 +355,39 @@ const routes = {
         const moveMode = localStorage.getItem('moveMode') || 'walk';
         const repeatAlarm = localStorage.getItem('repeatAlarm') === 'true';
         const missionAlarmEnabled = localStorage.getItem('missionAlarmEnabled') !== 'false';
+        // 알림 반경 단계별 값
+        const walkRanges = [0, 10, 50, 100, 500, 800, 1000];
+        const driveRanges = [0, 100, 500, 800, 1000, 5000, 10000];
+        // 현재 반경값
+        const alarmRangeWalk = Number(localStorage.getItem('alarmRange_walk') || 100);
+        const alarmRangeDrive = Number(localStorage.getItem('alarmRange_drive') || 1000);
+        // 현재 이동방식에 따라 슬라이더 값/범위 결정
+        const isWalk = moveMode === 'walk';
+        const sliderRanges = isWalk ? walkRanges : driveRanges;
+        const sliderValue = isWalk ? alarmRangeWalk : alarmRangeDrive;
+        // 슬라이더에서 index로 관리
+        const sliderIndex = sliderRanges.findIndex(v => v === sliderValue) !== -1 ? sliderRanges.findIndex(v => v === sliderValue) : 0;
+        // 단위 변환 함수
+        function formatRange(val) {
+            if (val >= 1000) return (val/1000) + 'km';
+            return val + 'm';
+        }
         const content = `
             <h1 class="page-title">설정</h1>
             <div class="card" style="margin-bottom:2rem;">
                 <h2 style="margin-bottom:1rem;">이동방식</h2>
-                <label style="display:block;margin-bottom:0.5rem;font-weight:600;"><input type="radio" name="moveMode" value="walk" ${moveMode==='walk'?'checked':''}> 걷는 중</label>
-                <label style="display:block;font-weight:600;"><input type="radio" name="moveMode" value="drive" ${moveMode==='drive'?'checked':''}> 운전 중</label>
+                <label style="display:block;margin-bottom:0.5rem;font-weight:600;"><input type="radio" name="moveMode" value="walk" ${moveMode==='walk'?'checked':''}> 걷는 중
+                    <div id="walk-range-slider" style="margin-top:10px;${isWalk?'':'display:none'}">
+                        <input type="range" min="0" max="${walkRanges.length-1}" step="1" value="${walkRanges.findIndex(v=>v===alarmRangeWalk)}">
+                        <span id="walk-range-value" style="margin-left:10px;font-weight:bold;">${formatRange(alarmRangeWalk)}</span>
+                    </div>
+                </label>
+                <label style="display:block;font-weight:600;"><input type="radio" name="moveMode" value="drive" ${moveMode==='drive'?'checked':''}> 운전 중
+                    <div id="drive-range-slider" style="margin-top:10px;${isWalk?'display:none':''}">
+                        <input type="range" min="0" max="${driveRanges.length-1}" step="1" value="${driveRanges.findIndex(v=>v===alarmRangeDrive)}">
+                        <span id="drive-range-value" style="margin-left:10px;font-weight:bold;">${formatRange(alarmRangeDrive)}</span>
+                    </div>
+                </label>
             </div>
             <div class="card" style="margin-bottom:2rem;">
                 <h2 style="margin-bottom:1rem;">미션 알림 기능</h2>
@@ -377,9 +404,34 @@ const routes = {
         // 이벤트 바인딩
         document.querySelectorAll('input[name=moveMode]').forEach(radio => {
             radio.onchange = function() {
-                if (this.checked) localStorage.setItem('moveMode', this.value);
+                if (this.checked) {
+                    localStorage.setItem('moveMode', this.value);
+                    // 슬라이더 UI 토글
+                    document.getElementById('walk-range-slider').style.display = this.value==='walk'?'':'none';
+                    document.getElementById('drive-range-slider').style.display = this.value==='drive'?'':'none';
+                }
             };
         });
+        // 걷는 중 슬라이더
+        const walkSlider = document.querySelector('#walk-range-slider input[type=range]');
+        if (walkSlider) {
+            walkSlider.oninput = function() {
+                const idx = Number(this.value);
+                const val = walkRanges[idx];
+                document.getElementById('walk-range-value').textContent = formatRange(val);
+                localStorage.setItem('alarmRange_walk', val);
+            };
+        }
+        // 운전 중 슬라이더
+        const driveSlider = document.querySelector('#drive-range-slider input[type=range]');
+        if (driveSlider) {
+            driveSlider.oninput = function() {
+                const idx = Number(this.value);
+                const val = driveRanges[idx];
+                document.getElementById('drive-range-value').textContent = formatRange(val);
+                localStorage.setItem('alarmRange_drive', val);
+            };
+        }
         document.querySelectorAll('input[name=repeatAlarm]').forEach(radio => {
             radio.onchange = function() {
                 localStorage.setItem('repeatAlarm', this.value === 'on');
